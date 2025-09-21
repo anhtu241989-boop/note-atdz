@@ -7,7 +7,7 @@
 
 body {
   background: #121212;
-  color: #f5f5f5;
+  color: #eaeaea; /* màu chữ chính */
   font-family: 'Segoe UI', 'Roboto', 'Inter', Tahoma, Geneva, Verdana, sans-serif;
   display: flex;
   justify-content: center;
@@ -24,46 +24,59 @@ body {
   max-width: 500px;
 }
 
-/* Chỉnh tiêu đề nhỏ + mảnh hơn */
+/* Tiêu đề nhỏ + mảnh */
 h1 {
   text-align: center;
   margin-bottom: 10px;
-  color: #00d1ff;
-  font-size: 1.4rem;   /* nhỏ hơn (1.4rem ≈ 22px) */
-  font-weight: 200;    /* chữ mảnh */
+  color: #eaeaea;
+  font-size: 1.4rem;
+  font-weight: 200;
   letter-spacing: 0.5px;
 }
 
 .subtitle {
   text-align: center;
-  font-size: 0.85rem;  /* nhỏ gọn hơn */
-  color: #aaa;
-  font-weight: 200;    /* chữ mảnh */
+  font-size: 0.85rem;
+  color: #eaeaea;
+  font-weight: 200;
   margin-bottom: 20px;
 }
 
+/* Form nhập */
 .note-form {
   display: flex;
   gap: 10px;
   margin-bottom: 20px;
 }
 
-.note-form input[type="text"] {
+.note-form input[type="text"],
+textarea {
   flex: 1;
   padding: 10px 15px;
   border: none;
   border-radius: 6px;
   background: #303030;
-  color: #f5f5f5;
+  color: #eaeaea;
   font-size: 1rem;
   font-weight: 300;
+  resize: vertical;
 }
 
-.note-form input[type="text"]:focus {
+/* Placeholder chìm mờ hơn chữ thật */
+::placeholder {
+  color: #eaeaea;
+  opacity: 0.4;       /* mờ để chìm xuống */
+  font-weight: 300;
+  font-style: italic; /* nghiêng để dễ phân biệt */
+}
+
+.note-form input[type="text"]:focus,
+textarea:focus {
   outline: none;
   box-shadow: 0 0 0 2px #00d1ff;
 }
 
+/* Button */
 .note-form button {
   padding: 10px 20px;
   border: none;
@@ -80,6 +93,7 @@ h1 {
   background: #009dbf;
 }
 
+/* Danh sách note */
 .note-list {
   list-style: none;
 }
@@ -97,8 +111,10 @@ h1 {
 .note-text {
   flex: 1;
   font-weight: 300;
+  color: #eaeaea;
 }
 
+/* Action buttons */
 .actions {
   display: flex;
   gap: 5px;
@@ -114,7 +130,7 @@ h1 {
   border: none;
   padding: 5px;
   border-radius: 4px;
-  color: #f5f5f5;
+  color: #eaeaea;
   font-size: 0.9rem;
   font-weight: 300;
 }
@@ -125,6 +141,7 @@ h1 {
   background: transparent;
   cursor: pointer;
   font-size: 1.1rem;
+  color: #eaeaea;
   transition: color 0.2s ease;
 }
 
