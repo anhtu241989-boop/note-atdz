@@ -1,4 +1,3 @@
-// server.js
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
@@ -38,7 +37,7 @@ app.use(express.static(path.join(__dirname, "public")));
 function customUUID() {
   const ts = Date.now().toString(16);
   const rand = Math.random().toString(16).substring(2, 10);
-  return `${ts}-${rand}`;
+  return ${ts}-${rand};
 }
 
 function saveNotesToFile() {
@@ -54,16 +53,16 @@ function saveNotesToFile() {
 // GET / -> create a new note and redirect
 app.get("/", (req, res) => {
   const id = customUUID();
-  notes[id] = { content: "Start typing..." };
+  notes[id] = { content: "" }; // để trống, không có "Start typing..."
   saveNotesToFile();
-  return res.redirect(`/note/${id}`);
+  return res.redirect(/note/${id});
 });
 
 // GET /note/:id -> render editor
 app.get("/note/:id", (req, res) => {
   const id = req.params.id;
   if (!notes[id]) {
-    notes[id] = { content: "Start typing..." };
+    notes[id] = { content: "" }; // note mới để trống
     saveNotesToFile();
   }
   return res.render("index", { note: notes[id], noteId: id });
@@ -157,5 +156,5 @@ app.use((req, res) => res.status(404).send("Not found"));
 
 // Start
 app.listen(PORT, () => {
-  console.log(`🚀 Server running at http://localhost:${PORT}`);
+  console.log(🚀 Server running at http://localhost:${PORT});
 });
