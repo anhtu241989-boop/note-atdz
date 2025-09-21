@@ -24,21 +24,21 @@ body {
   max-width: 500px;
 }
 
-/* Chỉnh chữ mảnh hơn */
+/* Chỉnh tiêu đề nhỏ + mảnh hơn */
 h1 {
   text-align: center;
   margin-bottom: 10px;
   color: #00d1ff;
-  font-size: 1.8rem;
-  font-weight: 300; /* nhẹ hơn */
+  font-size: 1.4rem;   /* nhỏ hơn (1.4rem ≈ 22px) */
+  font-weight: 200;    /* chữ mảnh */
   letter-spacing: 0.5px;
 }
 
 .subtitle {
   text-align: center;
-  font-size: 0.9rem;
+  font-size: 0.85rem;  /* nhỏ gọn hơn */
   color: #aaa;
-  font-weight: 300; /* chữ mảnh */
+  font-weight: 200;    /* chữ mảnh */
   margin-bottom: 20px;
 }
 
