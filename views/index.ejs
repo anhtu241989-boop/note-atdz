@@ -11,8 +11,9 @@
   <style>
     body {
       margin: 0;
-      font-family: monospace;
+      font-family: "Segoe UI", "Inter", monospace;
       transition: background 0.3s, color 0.3s;
+      font-weight: 200; /* chữ toàn trang mảnh */
     }
     header {
       padding: 10px;
@@ -24,12 +25,13 @@
     header h1 {
       margin: 0;
       font-size: 18px;
-      font-weight: 300;
-      letter-spacing: 0.3px;
+      font-weight: 200;
+      letter-spacing: 0.5px;
     }
     header small {
       font-size: 12px;
-      font-weight: 300;
+      font-weight: 200;
+      letter-spacing: 0.3px;
     }
     .toggle-mode {
       cursor: pointer;
@@ -37,6 +39,7 @@
       padding: 4px 10px;
       border-radius: 6px;
       transition: background 0.3s, color 0.3s, border 0.3s;
+      font-weight: 200;
     }
     #editor {
       height: calc(100vh - 55px);
@@ -45,6 +48,9 @@
       height: 100% !important;
       font-size: 14px;
       line-height: 1.5;
+      font-weight: 200;
+      letter-spacing: 0.3px;
+      transition: background 0.3s, color 0.3s;
     }
 
     /* DARK THEME (default) */
@@ -63,6 +69,10 @@
       border: 1px solid #444;
       color: #ddd;
     }
+    .cm-dark {
+      background: #1e1e1e !important;
+      color: #f5f5f5 !important;
+    }
 
     /* LIGHT THEME */
     body.light {
@@ -79,6 +89,10 @@
       background: #eee;
       border: 1px solid #ccc;
       color: #222;
+    }
+    .cm-light {
+      background: #fff !important;
+      color: #000 !important;
     }
   </style>
 </head>
@@ -107,6 +121,9 @@
       theme: "dracula"
     });
 
+    // Gán class theme ban đầu
+    editor.getWrapperElement().classList.add("cm-dark");
+
     // Auto-save mỗi 1s
     let timeout;
     editor.on("change", () => {
@@ -123,15 +140,21 @@
     // Đổi theme toàn trang + CodeMirror
     function toggleTheme() {
       let body = document.body;
+      let wrapper = editor.getWrapperElement();
+
       if (body.classList.contains("dark")) {
         body.classList.remove("dark");
         body.classList.add("light");
         editor.setOption("theme", "default");
+        wrapper.classList.remove("cm-dark");
+        wrapper.classList.add("cm-light");
         document.querySelector(".toggle-mode").innerText = "🌙 Dark Mode";
       } else {
         body.classList.remove("light");
         body.classList.add("dark");
         editor.setOption("theme", "dracula");
+        wrapper.classList.remove("cm-light");
+        wrapper.classList.add("cm-dark");
         document.querySelector(".toggle-mode").innerText = "☀ Light Mode";
       }
     }
