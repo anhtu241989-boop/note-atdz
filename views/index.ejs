@@ -13,41 +13,65 @@
       margin: 0;
       background-color: #1e1e1e;
       color: #ddd;
-      font-family: monospace;
+      font-family: "Fira Code", "Courier New", monospace;
     }
     header {
-      padding: 10px;
+      padding: 12px 16px;
       background: #111;
       border-bottom: 1px solid #333;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
     header h1 {
       margin: 0;
       font-size: 18px;
+      font-weight: 500;
     }
     header small {
       font-size: 12px;
       color: #888;
-    }
-    #editor {
-      height: calc(100vh - 60px);
+      margin-left: 10px;
     }
     .toggle-mode {
-      float: right;
       cursor: pointer;
       font-size: 14px;
+      background: #222;
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid #444;
+      transition: 0.2s;
+    }
+    .toggle-mode:hover {
+      background: #333;
+    }
+    #editor {
+      height: calc(100vh - 55px);
+    }
+
+    /* CodeMirror style */
+    .CodeMirror {
+      height: 100% !important;
+      font-size: 15px;
+      line-height: 1.5;
+      padding: 10px;
+    }
+    .CodeMirror-linenumbers {
+      padding-right: 10px;
     }
   </style>
 </head>
 <body>
+  <!-- ===== HEADER ===== -->
   <header>
-    <h1>
-      Note Service
-      <span class="toggle-mode" onclick="toggleTheme()">☀ Light Mode</span>
-    </h1>
-    <small>Changes are automatically saved after 1s</small>
+    <div>
+      <h1>Note Service</h1>
+      <small>Changes are automatically saved after 1s</small>
+    </div>
+    <div class="toggle-mode" onclick="toggleTheme()">☀ Light Mode</div>
   </header>
 
-  <!-- Editor -->
+  <!-- ===== EDITOR ===== -->
   <textarea id="editor"><%= note ? note.content : "Start typing..." %></textarea>
 
   <!-- CodeMirror JS -->
@@ -55,14 +79,16 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/javascript/javascript.min.js"></script>
 
   <script>
-    // Khởi tạo editor
+    // Khởi tạo CodeMirror
     let editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
       lineNumbers: true,
       mode: "javascript",
-      theme: "dracula"
+      theme: "dracula",
+      indentUnit: 2,
+      tabSize: 2
     });
 
-    // Auto-save mỗi 1 giây sau khi gõ
+    // Auto-save 1s
     let timeout;
     editor.on("change", () => {
       clearTimeout(timeout);
@@ -75,7 +101,7 @@
       }, 1000);
     });
 
-    // Chuyển theme
+    // Đổi theme Light/Dark
     function toggleTheme() {
       let newTheme = editor.getOption("theme") === "dracula" ? "default" : "dracula";
       editor.setOption("theme", newTheme);
