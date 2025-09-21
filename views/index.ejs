@@ -3,9 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <title>Note ATDZ</title>
-  <!-- CodeMirror -->
+
+  <!-- CodeMirror CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/dracula.min.css">
+
   <style>
     body {
       margin: 0;
@@ -39,24 +41,28 @@
 <body>
   <header>
     <h1>
-      Note Service 
+      Note Service
       <span class="toggle-mode" onclick="toggleTheme()">☀ Light Mode</span>
     </h1>
     <small>Changes are automatically saved after 1s</small>
   </header>
 
+  <!-- Editor -->
   <textarea id="editor"><%= note ? note.content : "Start typing..." %></textarea>
 
+  <!-- CodeMirror JS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/javascript/javascript.min.js"></script>
+
   <script>
+    // Khởi tạo editor
     let editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
       lineNumbers: true,
       mode: "javascript",
       theme: "dracula"
     });
 
-    // Auto-save sau 1 giây
+    // Auto-save mỗi 1 giây sau khi gõ
     let timeout;
     editor.on("change", () => {
       clearTimeout(timeout);
@@ -69,6 +75,7 @@
       }, 1000);
     });
 
+    // Chuyển theme
     function toggleTheme() {
       let newTheme = editor.getOption("theme") === "dracula" ? "default" : "dracula";
       editor.setOption("theme", newTheme);
