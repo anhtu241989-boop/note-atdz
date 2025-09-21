@@ -3,38 +3,78 @@
 <head>
   <meta charset="UTF-8">
   <title>Note ATDZ</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/style.css">
+  <!-- CodeMirror -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/dracula.min.css">
+  <style>
+    body {
+      margin: 0;
+      background-color: #1e1e1e;
+      color: #ddd;
+      font-family: monospace;
+    }
+    header {
+      padding: 10px;
+      background: #111;
+      border-bottom: 1px solid #333;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 18px;
+    }
+    header small {
+      font-size: 12px;
+      color: #888;
+    }
+    #editor {
+      height: calc(100vh - 60px);
+    }
+    .toggle-mode {
+      float: right;
+      cursor: pointer;
+      font-size: 14px;
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <h1>📒 Note ATDZ</h1>
+  <header>
+    <h1>
+      Note Service 
+      <span class="toggle-mode" onclick="toggleTheme()">☀ Light Mode</span>
+    </h1>
+    <small>Changes are automatically saved after 1s</small>
+  </header>
 
-    <!-- Form thêm ghi chú -->
-    <form action="/add" method="POST" class="note-form">
-      <input type="text" name="note" placeholder="Nhập ghi chú..." required autocomplete="off">
-      <button type="submit">Thêm</button>
-    </form>
+  <textarea id="editor"><%= note ? note.content : "Start typing..." %></textarea>
 
-    <!-- Danh sách ghi chú -->
-    <ul class="note-list">
-      <% notes.forEach(function(note, idx) { %>
-        <li>
-          <span class="note-text"><%= note %></span>
-          <div class="actions">
-            <!-- Form chỉnh sửa -->
-            <form action="/edit/<%= idx %>" method="POST" class="inline-form">
-              <input type="text" name="newNote" placeholder="Sửa..." required>
-              <button type="submit" class="edit-btn">✏️</button>
-            </form>
-            <!-- Form xóa -->
-            <form action="/delete/<%= idx %>" method="POST" class="inline-form">
-              <button type="submit" class="delete-btn">🗑️</button>
-            </form>
-          </div>
-        </li>
-      <% }) %>
-    </ul>
-  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/javascript/javascript.min.js"></script>
+  <script>
+    let editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
+      lineNumbers: true,
+      mode: "javascript",
+      theme: "dracula"
+    });
+
+    // Auto-save sau 1 giây
+    let timeout;
+    editor.on("change", () => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        fetch("/save/<%= noteId %>", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ content: editor.getValue() })
+        });
+      }, 1000);
+    });
+
+    function toggleTheme() {
+      let newTheme = editor.getOption("theme") === "dracula" ? "default" : "dracula";
+      editor.setOption("theme", newTheme);
+      document.querySelector(".toggle-mode").innerText =
+        newTheme === "dracula" ? "☀ Light Mode" : "🌙 Dark Mode";
+    }
+  </script>
 </body>
 </html>
