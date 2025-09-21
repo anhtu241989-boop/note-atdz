@@ -4,9 +4,6 @@
   <meta charset="UTF-8">
   <title>Note ATDZ</title>
 
-  <!-- Google Fonts: JetBrains Mono -->
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@200;300;400&display=swap" rel="stylesheet">
-
   <!-- CodeMirror CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/dracula.min.css">
@@ -34,10 +31,11 @@
       margin: 0;
       background-color: var(--bg-color);
       color: var(--text-color);
-      font-family: "JetBrains Mono", monospace;
-      font-weight: 200;
-      letter-spacing: 0.7px;
-      line-height: 1.7;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-weight: 500;       /* chữ đậm hơn */
+      font-size: 14px;        /* chữ nhỏ gọn */
+      letter-spacing: 0.3px;  /* spacing vừa phải */
+      line-height: 1.6;
     }
 
     header {
@@ -51,18 +49,18 @@
 
     header h1 {
       margin: 0;
-      font-size: 18px;
-      font-weight: 300;
-      letter-spacing: 1px;
-      line-height: 1.8;
+      font-size: 16px;
+      font-weight: 600;       /* đậm hơn cho tiêu đề */
+      letter-spacing: 0.5px;
+      line-height: 1.7;
       color: var(--text-color);
     }
 
     header small {
       font-size: 12px;
-      font-weight: 200;
-      letter-spacing: 0.8px;
-      line-height: 1.6;
+      font-weight: 400;
+      letter-spacing: 0.4px;
+      line-height: 1.5;
       color: var(--text-color);
     }
 
@@ -83,20 +81,20 @@
 
     .CodeMirror {
       height: 100% !important;
-      font-size: 14px;
-      font-family: "JetBrains Mono", monospace;
-      font-weight: 300;
-      letter-spacing: 0.7px;
-      line-height: 1.7;
+      font-size: 13px;        /* chữ code nhỏ gọn */
+      font-family: monospace; /* giữ font code mặc định */
+      font-weight: 500;       /* code đậm hơn để rõ ràng */
+      letter-spacing: 0.3px;
+      line-height: 1.6;
       color: var(--text-color);
       background: var(--bg-color);
       transition: all 0.3s ease;
     }
 
-    /* Hiệu ứng: hover editor thì chữ giãn thêm */
+    /* Hover editor: chữ giãn thêm chút */
     .CodeMirror:hover {
-      letter-spacing: 1px;
-      line-height: 1.8;
+      letter-spacing: 0.5px;
+      line-height: 1.7;
     }
   </style>
 </head>
