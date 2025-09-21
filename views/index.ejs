@@ -1,85 +1,260 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Note Service</title>
 
   <!-- CodeMirror CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/dracula.min.css">
 
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
   <style>
-    body {
-      margin: 0;
-      background-color: #1e1e1e;
-      color: #ddd;
-      font-family: system-ui, sans-serif;
-      transition: background 0.3s, color 0.3s;
+    :root {
+      --bg-light: #f8fafc;
+      --editor-bg-light: #ffffff;
+      --text-light: #1e293b;
+      --line-numbers-light: #64748b;
+      --line-numbers-bg-light: #f1f5f9;
+      --border-light: #e2e8f0;
+      --header-bg-light: linear-gradient(145deg, #f1f5f9, #e2e8f0);
+      --header-text-light: #1e293b;
+      --active-line-light: #e0e7ff;
+      --scrollbar-light: #94a3b8;
+      --button-bg-light: #e5e7eb;
+      --button-text-light: #1e293b;
+
+      --bg-dark: #0f172a;
+      --editor-bg-dark: #1e293b;
+      --text-dark: #e2e8f0;
+      --line-numbers-dark: #94a3b8;
+      --line-numbers-bg-dark: #1e293b;
+      --border-dark: #475569;
+      --header-bg-dark: linear-gradient(145deg, #1e293b, #111827);
+      --header-text-dark: #e2e8f0;
+      --active-line-dark: #334155;
+      --scrollbar-dark: #475569;
+      --button-bg-dark: #374151;
+      --button-text-dark: #e2e8f0;
     }
-    header {
-      padding: 10px;
-      background: #111;
-      border-bottom: 1px solid #333;
+
+    [data-theme="light"] {
+      --bg: var(--bg-light);
+      --editor-bg: var(--editor-bg-light);
+      --text: var(--text-light);
+      --line-numbers: var(--line-numbers-light);
+      --line-numbers-bg: var(--line-numbers-bg-light);
+      --border: var(--border-light);
+      --header-bg: var(--header-bg-light);
+      --header-text: var(--header-text-light);
+      --active-line: var(--active-line-light);
+      --scrollbar: var(--scrollbar-light);
+      --button-bg: var(--button-bg-light);
+      --button-text: var(--button-text-light);
+    }
+
+    [data-theme="dark"] {
+      --bg: var(--bg-dark);
+      --editor-bg: var(--editor-bg-dark);
+      --text: var(--text-dark);
+      --line-numbers: var(--line-numbers-dark);
+      --line-numbers-bg: var(--line-numbers-bg-dark);
+      --border: var(--border-dark);
+      --header-bg: var(--header-bg-dark);
+      --header-text: var(--header-text-dark);
+      --active-line: var(--active-line-dark);
+      --scrollbar: var(--scrollbar-dark);
+      --button-bg: var(--button-bg-dark);
+      --button-text: var(--button-text-dark);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.4s ease;
+      animation: fadeIn 0.5s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .editor-header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 12px 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      transition: background 0.3s, color 0.3s;
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
-    header h1 {
-      margin: 0;
+
+    .editor-title {
       font-size: 16px;
-      font-weight: 600;
-      letter-spacing: 0.5px;
+      font-weight: 500;
     }
-    header small {
+
+    .editor-subtitle {
       font-size: 12px;
-      color: #888;
+      opacity: 0.7;
+      margin-top: 4px;
     }
-    .toggle-mode {
-      cursor: pointer;
-      font-size: 14px;
-      background: #222;
-      padding: 4px 10px;
+
+    .theme-toggle {
+      background: var(--button-bg);
+      color: var(--button-text);
+      border: none;
+      padding: 8px 12px;
       border-radius: 6px;
-      border: 1px solid #444;
-      transition: background 0.3s, color 0.3s;
+      cursor: pointer;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.3s ease;
+      position: relative;
     }
-    #editor {
-      height: calc(100vh - 55px);
+
+    .theme-toggle:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     }
+
+    .editor-container {
+      flex-grow: 1;
+      overflow: hidden;
+      position: relative;
+    }
+
     .CodeMirror {
       height: 100% !important;
       font-size: 14px;
       line-height: 1.6;
+      background: var(--editor-bg);
+      color: var(--text);
+      border-radius: 8px;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .CodeMirror-gutters {
+      background: var(--line-numbers-bg);
+      color: var(--line-numbers);
+      border-right: 1px solid var(--border);
+    }
+
+    .CodeMirror-linenumber {
+      padding: 0 10px 0 14px;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .CodeMirror-selected {
+      background: var(--active-line) !important;
+    }
+
+    .status-bar {
+      background: var(--header-bg);
+      color: var(--text);
+      padding: 8px 16px;
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border);
+      box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+      word-break: break-word;
+    }
+
+    .status-indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #22c55e;
+      margin-right: 6px;
+      transition: background 0.3s ease;
+    }
+
+    .status-indicator.saving {
+      background: #f59e0b;
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    @media (max-width: 768px) {
+      .editor-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+      .theme-toggle { align-self: flex-end; }
+      .CodeMirror { font-size: 13px; }
+      .status-bar { flex-direction: column; gap: 6px; }
     }
   </style>
 </head>
 <body>
-  <!-- HEADER -->
-  <header>
+  <div class="editor-header">
     <div>
-      <h1>Note Service</h1>
-      <small>Changes auto-saved after 1s</small>
+      <h3 class="editor-title">Note Service</h3>
+      <div class="editor-subtitle">Changes are automatically saved after 1s</div>
     </div>
-    <div class="toggle-mode" onclick="toggleTheme()">☀ Light Mode</div>
-  </header>
+    <button class="theme-toggle" onclick="toggleTheme()" data-tooltip="Toggle Theme">
+      <svg id="theme-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="5"></circle>
+        <line x1="12" y1="1" x2="12" y2="3"></line>
+        <line x1="12" y1="21" x2="12" y2="23"></line>
+      </svg>
+      <span id="theme-text">Dark Mode</span>
+    </button>
+  </div>
 
-  <!-- EDITOR -->
-  <textarea id="editor"><%= typeof note !== "undefined" && note ? note.content : "Start typing..." %></textarea>
+  <div class="editor-container">
+    <textarea id="editor"><%= typeof note !== "undefined" && note ? note.content : "Start typing..." %></textarea>
+  </div>
+
+  <div class="status-bar">
+    <div class="status-item">
+      <span id="statusIndicator" class="status-indicator"></span>
+      <span id="statusText" class="status-text">Ready</span>
+    </div>
+    <div class="status-item">
+      <span id="cursorPosition">Ln 1, Col 1</span>
+    </div>
+  </div>
 
   <!-- CodeMirror JS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/javascript/javascript.min.js"></script>
 
   <script>
-    // Khởi tạo CodeMirror
     let editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
       lineNumbers: true,
       mode: "javascript",
-      theme: "dracula"
+      theme: "dracula",
+      lineWrapping: true,
+      scrollBarStyle: "simple"
     });
 
-    // Auto-save mỗi 1s
     let timeout;
     editor.on("change", () => {
       clearTimeout(timeout);
@@ -88,33 +263,43 @@
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ content: editor.getValue() })
+        }).then(() => {
+          const statusIndicator = document.getElementById("statusIndicator");
+          const statusText = document.getElementById("statusText");
+          statusIndicator.classList.add("saving");
+          statusText.textContent = "Saving...";
+          setTimeout(() => {
+            statusIndicator.classList.remove("saving");
+            statusText.textContent = "Saved";
+            setTimeout(() => { statusText.textContent = "Ready"; }, 2000);
+          }, 1000);
         });
       }, 1000);
     });
 
-    // Đổi theme
+    function updateCursorPosition() {
+      const pos = editor.getCursor();
+      document.getElementById("cursorPosition").textContent = `Ln ${pos.line + 1}, Col ${pos.ch + 1}`;
+    }
+    editor.on("cursorActivity", updateCursorPosition);
+
     function toggleTheme() {
       let newTheme = editor.getOption("theme") === "dracula" ? "default" : "dracula";
       editor.setOption("theme", newTheme);
 
-      if (newTheme === "dracula") {
-        // Dark mode
-        document.body.style.backgroundColor = "#1e1e1e";
-        document.body.style.color = "#ddd";
-        document.querySelector("header").style.background = "#111";
-        document.querySelector("header").style.color = "#ddd";
-        document.querySelector(".toggle-mode").innerText = "☀ Light Mode";
-        document.querySelector(".toggle-mode").style.background = "#222";
-        document.querySelector(".toggle-mode").style.color = "#ddd";
+      const html = document.documentElement;
+      const newDataTheme = newTheme === "dracula" ? "dark" : "light";
+      html.setAttribute("data-theme", newDataTheme);
+
+      const themeText = document.getElementById("theme-text");
+      const themeIcon = document.getElementById("theme-icon");
+
+      if (newDataTheme === "light") {
+        themeText.textContent = "Dark Mode";
+        themeIcon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3A7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="2" fill="none"></path>';
       } else {
-        // Light mode
-        document.body.style.backgroundColor = "#fff";
-        document.body.style.color = "#000";
-        document.querySelector("header").style.background = "#f1f1f1";
-        document.querySelector("header").style.color = "#000";
-        document.querySelector(".toggle-mode").innerText = "🌙 Dark Mode";
-        document.querySelector(".toggle-mode").style.background = "#e0e0e0";
-        document.querySelector(".toggle-mode").style.color = "#000";
+        themeText.textContent = "Light Mode";
+        themeIcon.innerHTML = '<circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2"></circle><line x1="12" y1="1" x2="12" y2="3" stroke="currentColor" stroke-width="2"></line>';
       }
     }
   </script>
