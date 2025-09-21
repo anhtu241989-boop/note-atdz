@@ -52,21 +52,21 @@ h1 {
 .note-form input[type="text"],
 textarea {
   flex: 1;
-  padding: 10px 15px;
+  padding: 12px 16px;
   border: none;
   border-radius: 20px;   /* giống Messenger */
   background: #303030;
-  color: #ffffff;        /* chữ trắng */
+  color: #ffffff;        /* chữ thật trắng */
   font-size: 1rem;
-  font-weight: 300;
+  font-weight: 400;
   resize: vertical;
 }
 
-/* Placeholder trắng mờ */
-::placeholder {
+/* Placeholder trắng mờ chìm xuống */
+.note-form input[type="text"]::placeholder,
+textarea::placeholder {
   color: #ffffff80;  /* trắng mờ */
   font-weight: 400;
-  font-style: normal;
 }
 
 .note-form input[type="text"]:focus,
