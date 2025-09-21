@@ -2,99 +2,55 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Note ATDZ</title>
+  <title>Note Service</title>
 
   <!-- CodeMirror CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/dracula.min.css">
 
   <style>
-    :root {
-      --bg-color: #1e1e1e;
-      --text-color: #ddd;
-      --header-bg: #111;
-      --header-border: #333;
-      --toggle-bg: #222;
-      --toggle-border: #444;
-    }
-
-    body.light {
-      --bg-color: #fafafa;
-      --text-color: #222;
-      --header-bg: #f0f0f0;
-      --header-border: #ccc;
-      --toggle-bg: #ddd;
-      --toggle-border: #bbb;
-    }
-
     body {
       margin: 0;
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      font-weight: 500;       /* chữ đậm hơn */
-      font-size: 14px;        /* chữ nhỏ gọn */
-      letter-spacing: 0.3px;  /* spacing vừa phải */
-      line-height: 1.6;
+      background-color: #1e1e1e;
+      color: #ddd;
+      font-family: system-ui, sans-serif;
+      transition: background 0.3s, color 0.3s;
     }
-
     header {
       padding: 10px;
-      background: var(--header-bg);
-      border-bottom: 1px solid var(--header-border);
+      background: #111;
+      border-bottom: 1px solid #333;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      transition: background 0.3s, color 0.3s;
     }
-
     header h1 {
       margin: 0;
       font-size: 16px;
-      font-weight: 600;       /* đậm hơn cho tiêu đề */
+      font-weight: 600;
       letter-spacing: 0.5px;
-      line-height: 1.7;
-      color: var(--text-color);
     }
-
     header small {
       font-size: 12px;
-      font-weight: 400;
-      letter-spacing: 0.4px;
-      line-height: 1.5;
-      color: var(--text-color);
+      color: #888;
     }
-
     .toggle-mode {
       cursor: pointer;
       font-size: 14px;
-      background: var(--toggle-bg);
+      background: #222;
       padding: 4px 10px;
       border-radius: 6px;
-      border: 1px solid var(--toggle-border);
-      color: var(--text-color);
-      transition: background 0.2s;
+      border: 1px solid #444;
+      transition: background 0.3s, color 0.3s;
     }
-
     #editor {
       height: calc(100vh - 55px);
     }
-
     .CodeMirror {
       height: 100% !important;
-      font-size: 13px;        /* chữ code nhỏ gọn */
-      font-family: monospace; /* giữ font code mặc định */
-      font-weight: 500;       /* code đậm hơn để rõ ràng */
-      letter-spacing: 0.3px;
+      font-size: 14px;
       line-height: 1.6;
-      color: var(--text-color);
-      background: var(--bg-color);
-      transition: all 0.3s ease;
-    }
-
-    /* Hover editor: chữ giãn thêm chút */
-    .CodeMirror:hover {
-      letter-spacing: 0.5px;
-      line-height: 1.7;
     }
   </style>
 </head>
@@ -103,7 +59,7 @@
   <header>
     <div>
       <h1>Note Service</h1>
-      <small>Changes are automatically saved after 1s</small>
+      <small>Changes auto-saved after 1s</small>
     </div>
     <div class="toggle-mode" onclick="toggleTheme()">☀ Light Mode</div>
   </header>
@@ -136,14 +92,30 @@
       }, 1000);
     });
 
-    // Đổi theme toàn trang
+    // Đổi theme
     function toggleTheme() {
-      document.body.classList.toggle("light");
+      let newTheme = editor.getOption("theme") === "dracula" ? "default" : "dracula";
+      editor.setOption("theme", newTheme);
 
-      let isLight = document.body.classList.contains("light");
-      editor.setOption("theme", isLight ? "default" : "dracula");
-      document.querySelector(".toggle-mode").innerText =
-        isLight ? "🌙 Dark Mode" : "☀ Light Mode";
+      if (newTheme === "dracula") {
+        // Dark mode
+        document.body.style.backgroundColor = "#1e1e1e";
+        document.body.style.color = "#ddd";
+        document.querySelector("header").style.background = "#111";
+        document.querySelector("header").style.color = "#ddd";
+        document.querySelector(".toggle-mode").innerText = "☀ Light Mode";
+        document.querySelector(".toggle-mode").style.background = "#222";
+        document.querySelector(".toggle-mode").style.color = "#ddd";
+      } else {
+        // Light mode
+        document.body.style.backgroundColor = "#fff";
+        document.body.style.color = "#000";
+        document.querySelector("header").style.background = "#f1f1f1";
+        document.querySelector("header").style.color = "#000";
+        document.querySelector(".toggle-mode").innerText = "🌙 Dark Mode";
+        document.querySelector(".toggle-mode").style.background = "#e0e0e0";
+        document.querySelector(".toggle-mode").style.color = "#000";
+      }
     }
   </script>
 </body>
