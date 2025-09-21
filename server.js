@@ -8,7 +8,7 @@ const PORT = process.env.PORT || 3000;
 
 const DATA_FILE = path.join(__dirname, "notes.json");
 
-// --- Load notes from file (safe) ---
+// --- Load notes from file ---
 let notes = {};
 try {
   if (fs.existsSync(DATA_FILE)) {
@@ -32,7 +32,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
-app.use(express.static(path.join(__dirname, "public"))); 
+app.use(express.static(path.join(__dirname, "public")));
 
 // --- Helpers ---
 function customUUID() {
@@ -54,22 +54,22 @@ function saveNotesToFile() {
 // GET / -> create a new note and redirect
 app.get("/", (req, res) => {
   const id = customUUID();
-  notes[id] = { content: "" }; // <-- rỗng, placeholder sẽ do frontend hiển thị
+  notes[id] = { content: "Start typing..." };
   saveNotesToFile();
   return res.redirect(`/note/${id}`);
 });
 
-// GET /note/:id -> render index.ejs and pass note and noteId
+// GET /note/:id -> render editor
 app.get("/note/:id", (req, res) => {
   const id = req.params.id;
   if (!notes[id]) {
-    notes[id] = { content: "" }; // <-- rỗng
+    notes[id] = { content: "Start typing..." };
     saveNotesToFile();
   }
   return res.render("index", { note: notes[id], noteId: id });
 });
 
-// POST /save/:id -> save note content (autosave)
+// POST /save/:id -> autosave note
 app.post("/save/:id", (req, res) => {
   const id = req.params.id;
   const { content } = req.body;
@@ -82,11 +82,74 @@ app.post("/save/:id", (req, res) => {
   return res.json({ success: true });
 });
 
-// Optional: GET /api/:id -> return JSON
+// JSON API (cho bot, code gọi)
+app.get("/json/:id", (req, res) => {
+  const id = req.params.id;
+  if (!notes[id])
+    return res.status(404).json({ success: false, error: "Not found" });
+  return res.json({ success: true, note: notes[id] });
+});
+
+// API Preview (hiển thị web gọn đẹp)
 app.get("/api/:id", (req, res) => {
   const id = req.params.id;
-  if (!notes[id]) return res.status(404).json({ success: false, error: "Not found" });
-  return res.json({ success: true, note: notes[id] });
+
+  if (!notes[id]) {
+    return res
+      .status(404)
+      .send(
+        "<h2 style='font-family:sans-serif;color:#ff4444;text-align:center;margin-top:50px'>❌ Note không tồn tại</h2>"
+      );
+  }
+
+  const content = notes[id].content || "";
+
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Note Preview</title>
+      <style>
+        body {
+          background: #121212;
+          color: #eaeaea;
+          font-family: 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+          display: flex;
+          justify-content: center;
+          align-items: flex-start;
+          min-height: 100vh;
+          padding: 40px 20px;
+        }
+        .note-container {
+          background: #1e1e1e;
+          padding: 25px;
+          border-radius: 12px;
+          max-width: 800px;
+          width: 100%;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+          line-height: 1.6;
+          font-size: 1rem;
+          font-weight: 300;
+          white-space: pre-wrap;
+        }
+        h2 {
+          text-align: center;
+          font-weight: 400;
+          margin-bottom: 20px;
+          color: #00d1ff;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="note-container">
+        <h2>📄 Note Preview</h2>
+        <div>${content.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>
+      </div>
+    </body>
+    </html>
+  `);
 });
 
 // 404
