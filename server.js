@@ -2,9 +2,10 @@
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
+const { v4: uuidv4 } = require("uuid"); // ✅ dùng uuid chuẩn
 
 const app = express();
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 3000;
 
 const DATA_FILE = path.join(__dirname, "notes.json");
 
@@ -35,12 +36,6 @@ app.set("views", path.join(__dirname, "views"));
 app.use(express.static(path.join(__dirname, "public")));
 
 // --- Helpers ---
-function customUUID() {
-  const ts = Date.now().toString(16);
-  const rand = Math.random().toString(16).substring(2, 10);
-  return `${ts}-${rand}`;
-}
-
 function saveNotesToFile() {
   try {
     fs.writeFileSync(DATA_FILE, JSON.stringify(notes, null, 2), "utf8");
@@ -53,7 +48,7 @@ function saveNotesToFile() {
 
 // GET / -> create a new note and redirect
 app.get("/", (req, res) => {
-  const id = customUUID();
+  const id = uuidv4(); // ✅ sinh id bằng uuid v4
   notes[id] = { content: "Start typing..." };
   saveNotesToFile();
   return res.redirect(`/note/${id}`);
@@ -90,66 +85,17 @@ app.get("/json/:id", (req, res) => {
   return res.json({ success: true, note: notes[id] });
 });
 
-// API Preview (hiển thị web gọn đẹp)
+// API Raw (trả về nội dung thô của note)
 app.get("/api/:id", (req, res) => {
   const id = req.params.id;
 
   if (!notes[id]) {
-    return res
-      .status(404)
-      .send(
-        "<h2 style='font-family:sans-serif;color:#ff4444;text-align:center;margin-top:50px'>❌ Note không tồn tại</h2>"
-      );
+    return res.status(404).send("❌ Note không tồn tại");
   }
 
   const content = notes[id].content || "";
-
-  res.send(`
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>Note Preview</title>
-      <style>
-        body {
-          background: #121212;
-          color: #eaeaea;
-          font-family: 'Segoe UI', 'Roboto', 'Inter', sans-serif;
-          display: flex;
-          justify-content: center;
-          align-items: flex-start;
-          min-height: 100vh;
-          padding: 40px 20px;
-        }
-        .note-container {
-          background: #1e1e1e;
-          padding: 25px;
-          border-radius: 12px;
-          max-width: 800px;
-          width: 100%;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-          line-height: 1.6;
-          font-size: 1rem;
-          font-weight: 300;
-          white-space: pre-wrap;
-        }
-        h2 {
-          text-align: center;
-          font-weight: 400;
-          margin-bottom: 20px;
-          color: #00d1ff;
-        }
-      </style>
-    </head>
-    <body>
-      <div class="note-container">
-        <h2>📄 Note Preview</h2>
-        <div>${content.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>
-      </div>
-    </body>
-    </html>
-  `);
+  res.type("text/plain");   // header dạng text thuần
+  res.send(content);        // trả về raw text
 });
 
 // 404
