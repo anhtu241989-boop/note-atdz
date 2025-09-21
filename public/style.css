@@ -7,7 +7,7 @@
 
 body {
   background: #121212;
-  color: #eaeaea; /* màu chữ chính */
+  color: #ffffff; /* chữ trắng */
   font-family: 'Segoe UI', 'Roboto', 'Inter', Tahoma, Geneva, Verdana, sans-serif;
   display: flex;
   justify-content: center;
@@ -24,11 +24,11 @@ body {
   max-width: 500px;
 }
 
-/* Tiêu đề nhỏ + mảnh */
+/* Tiêu đề */
 h1 {
   text-align: center;
   margin-bottom: 10px;
-  color: #eaeaea;
+  color: #ffffff;
   font-size: 1.4rem;
   font-weight: 200;
   letter-spacing: 0.5px;
@@ -37,7 +37,7 @@ h1 {
 .subtitle {
   text-align: center;
   font-size: 0.85rem;
-  color: #eaeaea;
+  color: #ffffff;
   font-weight: 200;
   margin-bottom: 20px;
 }
@@ -54,20 +54,19 @@ textarea {
   flex: 1;
   padding: 10px 15px;
   border: none;
-  border-radius: 6px;
+  border-radius: 20px;   /* giống Messenger */
   background: #303030;
-  color: #eaeaea;
+  color: #ffffff;        /* chữ trắng */
   font-size: 1rem;
   font-weight: 300;
   resize: vertical;
 }
 
-/* Placeholder chìm mờ hơn chữ thật */
+/* Placeholder trắng mờ */
 ::placeholder {
-  color: #eaeaea;
-  opacity: 0.4;       /* mờ để chìm xuống */
-  font-weight: 300;
-  font-style: italic; /* nghiêng để dễ phân biệt */
+  color: #ffffff80;  /* trắng mờ */
+  font-weight: 400;
+  font-style: normal;
 }
 
 .note-form input[type="text"]:focus,
@@ -111,7 +110,7 @@ textarea:focus {
 .note-text {
   flex: 1;
   font-weight: 300;
-  color: #eaeaea;
+  color: #ffffff;  /* chữ trắng */
 }
 
 /* Action buttons */
@@ -130,7 +129,7 @@ textarea:focus {
   border: none;
   padding: 5px;
   border-radius: 4px;
-  color: #eaeaea;
+  color: #ffffff;   /* chữ trắng */
   font-size: 0.9rem;
   font-weight: 300;
 }
@@ -141,7 +140,7 @@ textarea:focus {
   background: transparent;
   cursor: pointer;
   font-size: 1.1rem;
-  color: #eaeaea;
+  color: #ffffff;
   transition: color 0.2s ease;
 }
 
