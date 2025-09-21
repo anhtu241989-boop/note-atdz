@@ -1,50 +1,60 @@
 const express = require("express");
-const bodyParser = require("body-parser");
 const path = require("path");
+const bodyParser = require("body-parser");
+const fs = require("fs");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Dữ liệu ghi chú lưu trong RAM (restart thì mất)
-let notes = [];
+// Lưu notes trong file JSON
+const DATA_FILE = path.join(__dirname, "notes.json");
 
-app.set("view engine", "ejs");
+// Đọc dữ liệu notes từ file (nếu chưa có thì tạo rỗng)
+let notes = {};
+if (fs.existsSync(DATA_FILE)) {
+  notes = JSON.parse(fs.readFileSync(DATA_FILE, "utf-8"));
+}
+
+// Middleware
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "public")));
 
-// Trang chủ: hiển thị danh sách ghi chú
+// Set view engine
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
+
+// Trang chủ → tạo note mới
 app.get("/", (req, res) => {
-  res.render("index", { notes });
+  const id = Date.now().toString(); // tạo id đơn giản
+  notes[id] = { content: "Start typing..." };
+  saveNotes();
+  res.redirect(`/note/${id}`);
 });
 
-// Thêm ghi chú
-app.post("/add", (req, res) => {
-  const { note } = req.body;
-  if (note && note.trim() !== "") {
-    notes.push(note.trim());
+// Hiển thị note
+app.get("/note/:id", (req, res) => {
+  const note = notes[req.params.id];
+  if (!note) return res.status(404).send("Note not found");
+  res.render("index", { note, noteId: req.params.id });
+});
+
+// API: lưu note
+app.post("/save/:id", (req, res) => {
+  const { content } = req.body;
+  if (!notes[req.params.id]) {
+    notes[req.params.id] = { content: "" };
   }
-  res.redirect("/");
+  notes[req.params.id].content = content;
+  saveNotes();
+  res.json({ success: true, note: notes[req.params.id] });
 });
 
-// Xóa ghi chú
-app.post("/delete/:id", (req, res) => {
-  const id = parseInt(req.params.id, 10);
-  if (!isNaN(id) && id >= 0 && id < notes.length) {
-    notes.splice(id, 1);
-  }
-  res.redirect("/");
-});
+// Lưu notes ra file
+function saveNotes() {
+  fs.writeFileSync(DATA_FILE, JSON.stringify(notes, null, 2), "utf-8");
+}
 
-// Chỉnh sửa ghi chú
-app.post("/edit/:id", (req, res) => {
-  const id = parseInt(req.params.id, 10);
-  const { newNote } = req.body;
-  if (!isNaN(id) && id >= 0 && id < notes.length && newNote.trim() !== "") {
-    notes[id] = newNote.trim();
-  }
-  res.redirect("/");
-});
-
+// Start server
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
+  console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
