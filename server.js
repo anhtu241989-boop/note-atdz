@@ -28,11 +28,11 @@ try {
 }
 
 // --- Middleware ---
-app.use(express.json()); // parse application/json
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
-app.use(express.static(path.join(__dirname, "public"))); // optional
+app.use(express.static(path.join(__dirname, "public"))); 
 
 // --- Helpers ---
 function customUUID() {
@@ -54,7 +54,7 @@ function saveNotesToFile() {
 // GET / -> create a new note and redirect
 app.get("/", (req, res) => {
   const id = customUUID();
-  notes[id] = { content: "Start typing..." };
+  notes[id] = { content: "" }; // <-- rỗng, placeholder sẽ do frontend hiển thị
   saveNotesToFile();
   return res.redirect(`/note/${id}`);
 });
@@ -63,12 +63,9 @@ app.get("/", (req, res) => {
 app.get("/note/:id", (req, res) => {
   const id = req.params.id;
   if (!notes[id]) {
-    // create if not exists
-    notes[id] = { content: "Start typing..." };
+    notes[id] = { content: "" }; // <-- rỗng
     saveNotesToFile();
   }
-
-  // Render views/index.ejs, make sure the file exists
   return res.render("index", { note: notes[id], noteId: id });
 });
 
@@ -78,17 +75,14 @@ app.post("/save/:id", (req, res) => {
   const { content } = req.body;
 
   if (!id) return res.status(400).json({ success: false, error: "Missing id" });
-
-  // Ensure we have note container
   if (!notes[id]) notes[id] = { content: "" };
 
   notes[id].content = typeof content === "string" ? content : "";
-
   saveNotesToFile();
   return res.json({ success: true });
 });
 
-// Optional: GET /api/:id -> return JSON (useful for debugging)
+// Optional: GET /api/:id -> return JSON
 app.get("/api/:id", (req, res) => {
   const id = req.params.id;
   if (!notes[id]) return res.status(404).json({ success: false, error: "Not found" });
