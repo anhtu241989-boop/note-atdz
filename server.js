@@ -8,13 +8,19 @@ const PORT = 3000;
 const dataFile = path.join(__dirname, "notes.json");
 let notes = {};
 
-if (fs.existsSync(dataFile)) {
-  notes = JSON.parse(fs.readFileSync(dataFile, "utf8"));
+// Load dữ liệu nếu có
+if (fs.existsSync(dataFile) && fs.readFileSync(dataFile, "utf8").trim() !== "") {
+  try {
+    notes = JSON.parse(fs.readFileSync(dataFile, "utf8"));
+  } catch (e) {
+    console.error("❌ Lỗi đọc notes.json:", e);
+    notes = {};
+  }
 }
 
 app.use(express.json());
 
-// 📌 Tạo UUID custom
+// 📌 Hàm tạo UUID custom
 function customUUID() {
   const ts = Date.now().toString(16);
   const rand = Math.random().toString(16).substring(2, 10);
@@ -41,7 +47,7 @@ app.get("/note/:id", (req, res) => {
     saveNotes();
   }
 
-  res.send(`
+  const page = `
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -98,7 +104,9 @@ app.get("/note/:id", (req, res) => {
       </script>
     </body>
     </html>
-  `);
+  `;
+
+  res.send(page);
 });
 
 // API save
@@ -113,5 +121,5 @@ app.post("/save/:id", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(\`🚀 Server running at http://localhost:\${PORT}\`);
+  console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
