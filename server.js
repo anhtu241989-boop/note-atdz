@@ -2,6 +2,7 @@ const express = require("express");
 const path = require("path");
 const bodyParser = require("body-parser");
 const fs = require("fs");
+const { v4: uuidv4 } = require("uuid"); // import uuid
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -25,7 +26,7 @@ app.set("views", path.join(__dirname, "views"));
 
 // Trang chủ → tạo note mới
 app.get("/", (req, res) => {
-  const id = Date.now().toString(); // tạo id đơn giản
+  const id = uuidv4(); // tạo id UUID
   notes[id] = { content: "Start typing..." };
   saveNotes();
   res.redirect(`/note/${id}`);
