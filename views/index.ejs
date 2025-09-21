@@ -9,13 +9,30 @@
 <body>
   <div class="container">
     <h1>📒 Note ATDZ</h1>
+
+    <!-- Form thêm ghi chú -->
     <form action="/add" method="POST" class="note-form">
       <input type="text" name="note" placeholder="Nhập ghi chú..." required autocomplete="off">
       <button type="submit">Thêm</button>
     </form>
+
+    <!-- Danh sách ghi chú -->
     <ul class="note-list">
       <% notes.forEach(function(note, idx) { %>
-        <li><span><%= idx + 1 %>.</span> <%= note %></li>
+        <li>
+          <span class="note-text"><%= note %></span>
+          <div class="actions">
+            <!-- Form chỉnh sửa -->
+            <form action="/edit/<%= idx %>" method="POST" class="inline-form">
+              <input type="text" name="newNote" placeholder="Sửa..." required>
+              <button type="submit" class="edit-btn">✏️</button>
+            </form>
+            <!-- Form xóa -->
+            <form action="/delete/<%= idx %>" method="POST" class="inline-form">
+              <button type="submit" class="delete-btn">🗑️</button>
+            </form>
+          </div>
+        </li>
       <% }) %>
     </ul>
   </div>
