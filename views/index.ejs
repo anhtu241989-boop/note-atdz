@@ -4,99 +4,103 @@
   <meta charset="UTF-8">
   <title>Note ATDZ</title>
 
+  <!-- Google Fonts: JetBrains Mono -->
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@200;300;400&display=swap" rel="stylesheet">
+
   <!-- CodeMirror CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/dracula.min.css">
 
   <style>
+    :root {
+      --bg-color: #1e1e1e;
+      --text-color: #ddd;
+      --header-bg: #111;
+      --header-border: #333;
+      --toggle-bg: #222;
+      --toggle-border: #444;
+    }
+
+    body.light {
+      --bg-color: #fafafa;
+      --text-color: #222;
+      --header-bg: #f0f0f0;
+      --header-border: #ccc;
+      --toggle-bg: #ddd;
+      --toggle-border: #bbb;
+    }
+
     body {
       margin: 0;
-      font-family: "Segoe UI", "Inter", monospace;
-      transition: background 0.3s, color 0.3s;
-      font-weight: 200; /* chữ toàn trang mảnh */
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: "JetBrains Mono", monospace;
+      font-weight: 200;
+      letter-spacing: 0.7px;
+      line-height: 1.7;
     }
+
     header {
       padding: 10px;
+      background: var(--header-bg);
+      border-bottom: 1px solid var(--header-border);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      transition: background 0.3s, color 0.3s;
     }
+
     header h1 {
       margin: 0;
       font-size: 18px;
-      font-weight: 200;
-      letter-spacing: 0.5px;
+      font-weight: 300;
+      letter-spacing: 1px;
+      line-height: 1.8;
+      color: var(--text-color);
     }
+
     header small {
       font-size: 12px;
       font-weight: 200;
-      letter-spacing: 0.3px;
+      letter-spacing: 0.8px;
+      line-height: 1.6;
+      color: var(--text-color);
     }
+
     .toggle-mode {
       cursor: pointer;
       font-size: 14px;
+      background: var(--toggle-bg);
       padding: 4px 10px;
       border-radius: 6px;
-      transition: background 0.3s, color 0.3s, border 0.3s;
-      font-weight: 200;
+      border: 1px solid var(--toggle-border);
+      color: var(--text-color);
+      transition: background 0.2s;
     }
+
     #editor {
       height: calc(100vh - 55px);
     }
+
     .CodeMirror {
       height: 100% !important;
       font-size: 14px;
-      line-height: 1.5;
-      font-weight: 200;
-      letter-spacing: 0.3px;
-      transition: background 0.3s, color 0.3s;
+      font-family: "JetBrains Mono", monospace;
+      font-weight: 300;
+      letter-spacing: 0.7px;
+      line-height: 1.7;
+      color: var(--text-color);
+      background: var(--bg-color);
+      transition: all 0.3s ease;
     }
 
-    /* DARK THEME (default) */
-    body.dark {
-      background-color: #1e1e1e;
-      color: #ddd;
-    }
-    body.dark header {
-      background: #111;
-      border-bottom: 1px solid #333;
-    }
-    body.dark header h1 { color: #eee; }
-    body.dark header small { color: #aaa; }
-    body.dark .toggle-mode {
-      background: #222;
-      border: 1px solid #444;
-      color: #ddd;
-    }
-    .cm-dark {
-      background: #1e1e1e !important;
-      color: #f5f5f5 !important;
-    }
-
-    /* LIGHT THEME */
-    body.light {
-      background-color: #f5f5f5;
-      color: #222;
-    }
-    body.light header {
-      background: #fff;
-      border-bottom: 1px solid #ccc;
-    }
-    body.light header h1 { color: #111; }
-    body.light header small { color: #555; }
-    body.light .toggle-mode {
-      background: #eee;
-      border: 1px solid #ccc;
-      color: #222;
-    }
-    .cm-light {
-      background: #fff !important;
-      color: #000 !important;
+    /* Hiệu ứng: hover editor thì chữ giãn thêm */
+    .CodeMirror:hover {
+      letter-spacing: 1px;
+      line-height: 1.8;
     }
   </style>
 </head>
-<body class="dark">
+<body>
   <!-- HEADER -->
   <header>
     <div>
@@ -121,9 +125,6 @@
       theme: "dracula"
     });
 
-    // Gán class theme ban đầu
-    editor.getWrapperElement().classList.add("cm-dark");
-
     // Auto-save mỗi 1s
     let timeout;
     editor.on("change", () => {
@@ -137,26 +138,14 @@
       }, 1000);
     });
 
-    // Đổi theme toàn trang + CodeMirror
+    // Đổi theme toàn trang
     function toggleTheme() {
-      let body = document.body;
-      let wrapper = editor.getWrapperElement();
+      document.body.classList.toggle("light");
 
-      if (body.classList.contains("dark")) {
-        body.classList.remove("dark");
-        body.classList.add("light");
-        editor.setOption("theme", "default");
-        wrapper.classList.remove("cm-dark");
-        wrapper.classList.add("cm-light");
-        document.querySelector(".toggle-mode").innerText = "🌙 Dark Mode";
-      } else {
-        body.classList.remove("light");
-        body.classList.add("dark");
-        editor.setOption("theme", "dracula");
-        wrapper.classList.remove("cm-light");
-        wrapper.classList.add("cm-dark");
-        document.querySelector(".toggle-mode").innerText = "☀ Light Mode";
-      }
+      let isLight = document.body.classList.contains("light");
+      editor.setOption("theme", isLight ? "default" : "dracula");
+      document.querySelector(".toggle-mode").innerText =
+        isLight ? "🌙 Dark Mode" : "☀ Light Mode";
     }
   </script>
 </body>
