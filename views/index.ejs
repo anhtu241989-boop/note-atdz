@@ -13,10 +13,10 @@
       margin: 0;
       background-color: #1e1e1e;
       color: #ddd;
-      font-family: "Fira Code", "Courier New", monospace;
+      font-family: monospace;
     }
     header {
-      padding: 12px 16px;
+      padding: 10px;
       background: #111;
       border-bottom: 1px solid #333;
       display: flex;
@@ -26,12 +26,10 @@
     header h1 {
       margin: 0;
       font-size: 18px;
-      font-weight: 500;
     }
     header small {
       font-size: 12px;
       color: #888;
-      margin-left: 10px;
     }
     .toggle-mode {
       cursor: pointer;
@@ -40,29 +38,19 @@
       padding: 4px 10px;
       border-radius: 6px;
       border: 1px solid #444;
-      transition: 0.2s;
-    }
-    .toggle-mode:hover {
-      background: #333;
     }
     #editor {
       height: calc(100vh - 55px);
     }
-
-    /* CodeMirror style */
     .CodeMirror {
       height: 100% !important;
-      font-size: 15px;
+      font-size: 14px;
       line-height: 1.5;
-      padding: 10px;
-    }
-    .CodeMirror-linenumbers {
-      padding-right: 10px;
     }
   </style>
 </head>
 <body>
-  <!-- ===== HEADER ===== -->
+  <!-- HEADER -->
   <header>
     <div>
       <h1>Note Service</h1>
@@ -71,8 +59,8 @@
     <div class="toggle-mode" onclick="toggleTheme()">☀ Light Mode</div>
   </header>
 
-  <!-- ===== EDITOR ===== -->
-  <textarea id="editor"><%= note ? note.content : "Start typing..." %></textarea>
+  <!-- EDITOR -->
+  <textarea id="editor"><%= typeof note !== "undefined" && note ? note.content : "Start typing..." %></textarea>
 
   <!-- CodeMirror JS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
@@ -83,17 +71,15 @@
     let editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
       lineNumbers: true,
       mode: "javascript",
-      theme: "dracula",
-      indentUnit: 2,
-      tabSize: 2
+      theme: "dracula"
     });
 
-    // Auto-save 1s
+    // Auto-save mỗi 1s
     let timeout;
     editor.on("change", () => {
       clearTimeout(timeout);
       timeout = setTimeout(() => {
-        fetch("/save/<%= noteId %>", {
+        fetch("/save/<%= typeof noteId !== 'undefined' ? noteId : '' %>", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ content: editor.getValue() })
@@ -101,7 +87,7 @@
       }, 1000);
     });
 
-    // Đổi theme Light/Dark
+    // Đổi theme
     function toggleTheme() {
       let newTheme = editor.getOption("theme") === "dracula" ? "default" : "dracula";
       editor.setOption("theme", newTheme);
