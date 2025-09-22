@@ -7,7 +7,6 @@
 
   <!-- CodeMirror CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/dracula.min.css">
 
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -167,17 +166,44 @@
       background: var(--active-line) !important;
     }
 
+    /* Placeholder style */
+    .CodeMirror-empty {
+      position: relative;
+    }
+    .CodeMirror-empty::before {
+      content: attr(data-placeholder);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text);
+      opacity: 0.4;
+      font-style: normal;
+      position: absolute;
+      left: 10px;
+      top: 4px;
+      pointer-events: none;
+      user-select: none;
+      padding-left: 40px; /* Đảm bảo không chồng lấn với line numbers */
+    }
+
     .status-bar {
       background: var(--header-bg);
       color: var(--text);
       padding: 8px 16px;
       font-size: 12px;
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-start;
       align-items: center;
+      gap: 16px;
       border-top: 1px solid var(--border);
       box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
-      word-break: break-word;
+      white-space: nowrap;
+    }
+
+    .status-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .status-indicator {
@@ -185,7 +211,6 @@
       height: 10px;
       border-radius: 50%;
       background: #22c55e;
-      margin-right: 6px;
       transition: background 0.3s ease;
     }
 
@@ -208,7 +233,7 @@
       }
       .theme-toggle { align-self: flex-end; }
       .CodeMirror { font-size: 13px; }
-      .status-bar { flex-direction: column; gap: 6px; }
+      .status-bar { flex-wrap: wrap; gap: 10px; }
     }
   </style>
 </head>
@@ -229,7 +254,7 @@
   </div>
 
   <div class="editor-container">
-    <textarea id="editor"><%= typeof note !== "undefined" && note ? note.content : "Start typing..." %></textarea>
+    <textarea id="editor"><%= typeof note !== "undefined" && note ? note.content : "" %></textarea>
   </div>
 
   <div class="status-bar">
@@ -244,16 +269,27 @@
 
   <!-- CodeMirror JS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/javascript/javascript.min.js"></script>
 
   <script>
     let editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
       lineNumbers: true,
-      mode: "javascript",
-      theme: "dracula",
       lineWrapping: true,
       scrollBarStyle: "simple"
     });
+
+    // Placeholder xử lý
+    const editorWrapper = editor.getWrapperElement();
+    function updatePlaceholder() {
+      if (editor.getValue().length === 0) {
+        editorWrapper.classList.add("CodeMirror-empty");
+        editorWrapper.setAttribute("data-placeholder", "Start typing...");
+      } else {
+        editorWrapper.classList.remove("CodeMirror-empty");
+        editorWrapper.removeAttribute("data-placeholder");
+      }
+    }
+    updatePlaceholder();
+    editor.on("change", updatePlaceholder);
 
     let timeout;
     editor.on("change", () => {
@@ -284,11 +320,8 @@
     editor.on("cursorActivity", updateCursorPosition);
 
     function toggleTheme() {
-      let newTheme = editor.getOption("theme") === "dracula" ? "default" : "dracula";
-      editor.setOption("theme", newTheme);
-
       const html = document.documentElement;
-      const newDataTheme = newTheme === "dracula" ? "dark" : "light";
+      const newDataTheme = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
       html.setAttribute("data-theme", newDataTheme);
 
       const themeText = document.getElementById("theme-text");
