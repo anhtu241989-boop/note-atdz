@@ -33,7 +33,7 @@ function getNote(id) {
   return notes[id] || null;
 }
 
-function createNote(id, content = "Start typing...") {
+function createNote(id, content = "") {
   notes[id] = { content };
   saveNotes();
   return notes[id];
