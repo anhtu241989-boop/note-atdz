@@ -1,12 +1,26 @@
 const express = require("express");
-const { v4: uuidv4 } = require("uuid");
 const { getNote, createNote, updateNote } = require("../models/Note");
 
 const router = express.Router();
 
+// Hàm tạo ID ngẫu nhiên dạng chữ cái (8 ký tự)
+function generateId(length = 8) {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+  let id = "";
+  for (let i = 0; i < length; i++) {
+    id += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return id;
+}
+
 // Trang chủ -> tạo note mới
 router.get("/", (req, res) => {
-  const id = uuidv4();
+  let id;
+  // Tạo ID duy nhất, tránh trùng với notes hiện có
+  do {
+    id = generateId();
+  } while (getNote(id));
+
   createNote(id);
   res.redirect(`/note/${id}`);
 });
