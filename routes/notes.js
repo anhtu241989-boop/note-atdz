@@ -33,7 +33,7 @@ router.get("/note/:id", (req, res) => {
   res.render("index", { note, noteId: id });
 });
 
-// Lưu nội dung note
+// API lưu
 router.post("/save/:id", (req, res) => {
   const id = req.params.id;
   const { content } = req.body;
@@ -45,7 +45,7 @@ router.post("/save/:id", (req, res) => {
   res.json({ success: true });
 });
 
-// JSON API (giữ nguyên)
+// API JSON
 router.get("/json/:id", (req, res) => {
   const id = req.params.id;
   const note = getNote(id);
@@ -53,8 +53,8 @@ router.get("/json/:id", (req, res) => {
   res.json({ success: true, note });
 });
 
-// Raw text API (đổi từ /api -> /raw)
-router.get("/raw/:id", (req, res) => {
+// API Raw text
+router.get("/api/:id", (req, res) => {
   const id = req.params.id;
   const note = getNote(id);
   if (!note) return res.status(404).send("❌ Note không tồn tại");
